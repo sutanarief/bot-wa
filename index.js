@@ -23,15 +23,18 @@ app.post('/webhook', async (req, res) => {
     const sender = req.body.From || '';
     const lat = req.body.Latitude || '';
     const lon = req.body.Longitude || '';
+    console.log(body)
 
     const parsed = parseMessage(body);
+    const jenis = parsed.jenis.toLowerCase()
+    const mobil = parsed.mobil.toLowerCase()
 
     // VALIDASI
     if (!parsed.jenis || !parsed.nama) {
-      return res.send(`<Response><Message>❌ Format salah. Harap sertakan Nama dan ${parsed.jenis === 'Masuk' ? 'Mobil' : 'KM'}.</Message></Response>`);
+        return res.send(`<Response><Message>❌ Format salah. Harap sertakan Nama dan ${parsed.jenis === 'masuk' ? 'Mobil' : 'KM'}.</Message></Response>`);
     }
 
-    if (parsed.jenis === 'Masuk' && !parsed.mobil) {
+    if (jenis === 'masuk' && !mobil) {
       return res.send(`<Response><Message>❌ Harap sertakan "Mobil".</Message></Response>`);
     }
 

@@ -8,7 +8,7 @@ export const parseMessage = (body) => {
   const km = body.match(/KM:\s*(.*)/i)?.[1]?.split("\n")[0]?.trim() || '';
 
   return {
-    jenis: isMasuk ? 'Masuk' : isPulang ? 'Pulang' : '',
+    jenis: isMasuk ? 'start' : isPulang ? 'finish' : '',
     nama,
     mobil,
     km
