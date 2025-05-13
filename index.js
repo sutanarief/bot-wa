@@ -33,6 +33,42 @@ function formatTanggalIndonesia(date) {
   return `${bagianTanggal}, ${bagianWaktu}`;
 }
 
+function getFormTemplate(jenis) {
+  if (jenis === 'start') {
+    return `🟢 *FORM ABSEN START*  
+Ketik dan kirim dengan format berikut:
+
+START
+Nama:  
+Mobil:  
+Nopol:  
+KM Awal:  
+Bensin Awal:  
+Saldo Etoll Awal:  
+Uang Cash Awal:  
+    `;
+  }
+
+  if (jenis === 'finish') {
+    return `🔴 *FORM ABSEN FINISH*  
+Ketik dan kirim dengan format berikut:
+
+FINISH
+Nama:  
+KM Akhir:  
+Bensin Akhir:  
+Saldo Etoll Akhir:  
+Parkir Etoll:  
+Parkir Cash:  
+Isi Bensin:  
+Isi Tol:  
+    `;
+  }
+
+  return null;
+}
+
+
 
 
 app.post('/webhook', async (req, res) => {
