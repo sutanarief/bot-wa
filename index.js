@@ -128,7 +128,8 @@ app.post('/webhook', async (req, res) => {
       longitude: lon
     };
 
-    await sendToGoogleSheet(data);
+    const responseGoogle = await sendToGoogleSheet(data);
+
     if (parsed.jenis === 'start') {
         setDriverStatus(sender, {
             active: true,
@@ -143,6 +144,12 @@ app.post('/webhook', async (req, res) => {
     const reply = parsed.jenis === 'start'
       ? `✅ Absen START berhasil dicatat!\n\n📌 Nama: ${data.nama}\n🚗 Mobil: ${data.mobil}\n📍 KM Awal: ${data.km}\n🕒 Waktu: ${data.waktu}\n\nSelamat bekerja! 🙏`
       : `✅ Absen FINISH berhasil dicatat!\n\n📌 Nama: ${data.nama}\n📍 KM Akhir: ${data.km}\n🕒 Waktu: ${data.waktu}\n\nTerima kasih, selamat istirahat 🙏`;
+
+      
+    if (typeof responseGoogle === 'string' && responseGoogle.includes('Error:')) {
+        console.error('⚠️ Google Apps Script error detected:', responseGoogle);
+        reply = '❌ Gagal mencatat absen: ' + responseGoogle;
+    }
 
     res.set('Content-Type', 'text/xml');
     res.send(`<Response><Message>${reply}</Message></Response>`);
