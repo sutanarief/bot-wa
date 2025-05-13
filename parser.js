@@ -3,6 +3,7 @@ export const parseMessage = (body) => {
   const jenisLine = lines[0].toLowerCase();
   const isStart = jenisLine.includes('start');
   const isFinish = jenisLine.includes('finish');
+  console.log(lines, 'data Mentah')
 
   const fields = {};
   lines.slice(1).forEach(line => {
@@ -11,6 +12,8 @@ export const parseMessage = (body) => {
       fields[key.trim().toLowerCase()] = rest.join(':').trim();
     }
   });
+
+  console.log(fields, 'data sudah disusun')
 
   return {
     jenis: isStart ? 'start' : isFinish ? 'finish' : '',

@@ -83,6 +83,7 @@ app.post('/webhook', async (req, res) => {
     }
 
     const parsed = parseMessage(body);
+    console.log(parsed, 'data sudah di parsing')
 
     if (!parsed.jenis) {
       return res.send(`<Response><Message>❌ Format tidak dikenali. Ketik "start" atau "finish" untuk mulai absen.</Message></Response>`);
