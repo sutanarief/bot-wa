@@ -45,8 +45,7 @@ Nopol:
 KM Awal:  
 Bensin Awal:  
 Saldo Etoll Awal:  
-Uang Cash Awal:  
-    `;
+Uang Cash Awal:`;
   }
 
   if (jenis === 'finish') {
@@ -58,11 +57,11 @@ Nama:
 KM Akhir:  
 Bensin Akhir:  
 Saldo Etoll Akhir:  
+Uang Cash Akhir:
 Parkir Etoll:  
 Parkir Cash:  
 Isi Bensin:  
-Isi Tol:  
-    `;
+Isi Tol:`;
   }
 
   return null;

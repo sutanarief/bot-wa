@@ -22,7 +22,7 @@ export const parseMessage = (body) => {
     km: fields['km awal'] || fields['km akhir'] || '',
     bensin: fields['bensin awal'] || fields['bensin akhir'] || '',
     saldoEtoll: fields['saldo etoll awal'] || fields['saldo etoll akhir'] || '0',
-    uangCash: fields['uang cash awal'] || '0',
+    uangCash: fields['uang cash awal'] || fields['uang cash akhir'] || '0',
     parkirEtoll: fields['parkir etoll'] || '0',
     parkirCash: fields['parkir cash'] || '0',
     isiBensin: fields['isi bensin'] || '0',
