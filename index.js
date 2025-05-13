@@ -9,13 +9,19 @@ dotenv.config();
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 
-const getGreeting = () => {
-  const hour = new Date().getHours();
-  if (hour < 11) return 'Selamat pagi';
-  if (hour < 15) return 'Selamat siang';
-  if (hour < 18) return 'Selamat sore';
-  return 'Selamat malam';
-};
+function formatTanggalIndonesia(date) {
+  const optionsTanggal = { day: 'numeric', month: 'long', year: 'numeric' };
+  const optionsWaktu = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+
+  const bagianTanggal = date.toLocaleDateString('id-ID', optionsTanggal);
+  const bagianWaktu = date.toLocaleTimeString('id-ID', optionsWaktu).replace(/\./g, ':');
+
+  return `${bagianTanggal}, ${bagianWaktu}`;
+}
+
+console.log(formatTanggalIndonesia(new Date()));
+
+
 
 app.post('/webhook', async (req, res) => {
   try {
@@ -53,7 +59,7 @@ app.post('/webhook', async (req, res) => {
 
     // KIRIM KE SHEETS
     const data = {
-      waktu: new Date().toISOString(),
+      waktu: formatTanggalIndonesia(new Date()),
       jenis: parsed.jenis,
       nama: parsed.nama,
       mobil: parsed.mobil,
@@ -66,14 +72,15 @@ app.post('/webhook', async (req, res) => {
     await sendToGoogleSheet(data);
 
     const reply = parsed.jenis === 'start'
-      ? `✅ Absen START berhasil dicatat!
+      ? 
+    `✅ Absen START berhasil dicatat!
 
-            📌 Nama: ${data.nama}  
-            🚗 Mobil: ${data.mobil}
-            📍 KM Awal: ${data.km}
-            🕒 Waktu: ${data.waktu}
+        📌 Nama: ${data.nama}  
+        🚗 Mobil: ${data.mobil}
+        📍 KM Awal: ${data.km}
+        🕒 Waktu: ${data.waktu}
 
-            Selamat bekerja, hati-hati di jalan! 🙏
+    Selamat bekerja, hati-hati di jalan! 🙏
         `
       : `
       ⛔ Absen FINISH berhasil dicatat!
