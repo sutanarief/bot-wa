@@ -68,20 +68,20 @@ app.post('/webhook', async (req, res) => {
     const reply = parsed.jenis === 'start'
       ? `✅ Absen START berhasil dicatat!
 
-            📌 Nama: ${nama}  
-            🚗 Mobil: ${mobil}
-            📍 KM Awal: ${km}
-            🕒 Waktu: ${waktu}
+            📌 Nama: ${data.nama}  
+            🚗 Mobil: ${data.mobil}
+            📍 KM Awal: ${data.km}
+            🕒 Waktu: ${data.waktu}
 
             Selamat bekerja, hati-hati di jalan! 🙏
         `
       : `
       ⛔ Absen FINISH berhasil dicatat!
 
-         📌 Nama: ${nama}  
-        🚗 Mobil: ${mobil}
-        📍 KM Awal: ${km}
-        🕒 Waktu: ${waktu}
+         📌 Nama: ${data.nama}  
+        🚗 Mobil: ${data.mobil}
+        📍 KM Awal: ${data.km}
+        🕒 Waktu: ${data.waktu}
 
         Terima kasih atas kerja hari ini. Selamat beristirahat, semoga sehat selalu! 🙏
       `;
