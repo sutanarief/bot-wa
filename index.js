@@ -104,13 +104,13 @@ app.post('/webhook', async (req, res) => {
     }
 
     // 4. Cek ganda (opsional)
-    const checkURL = `${process.env.GOOGLE_SHEET_URL}?sender=${encodeURIComponent(sender)}&jenis=${parsed.jenis}`;
-    const checkRes = await axios.get(checkURL);
-    const { exists } = checkRes.data;
+    // const checkURL = `${process.env.GOOGLE_SHEET_URL}?sender=${encodeURIComponent(sender)}&jenis=${parsed.jenis}`;
+    // const checkRes = await axios.get(checkURL);
+    // const { exists } = checkRes.data;
 
-    if (exists) {
-      return res.send(`<Response><Message>⚠️ Kamu sudah absen ${parsed.jenis} hari ini.</Message></Response>`);
-    }
+    // if (exists) {
+    //   return res.send(`<Response><Message>⚠️ Kamu sudah absen ${parsed.jenis} hari ini.</Message></Response>`);
+    // }
 
     // 5. Kirim ke Google Sheets
     const data = {
@@ -134,12 +134,27 @@ app.post('/webhook', async (req, res) => {
 
     await sendToGoogleSheet(data);
 
-    const reply = parsed.jenis === 'start'
-      ? `✅ Absen START berhasil dicatat!\n\n📌 Nama: ${data.nama}\n🚗 Mobil: ${data.mobil}\n📍 KM Awal: ${data.km}\n🕒 Waktu: ${data.waktu}\n\nSelamat bekerja! 🙏`
-      : `✅ Absen FINISH berhasil dicatat!\n\n📌 Nama: ${data.nama}\n🚗 Mobil: ${data.mobil || '-'}\n📍 KM Akhir: ${data.km}\n🕒 Waktu: ${data.waktu}\n\nTerima kasih, selamat istirahat 🙏`;
+    if (parsed.jenis === 'start') {
+  res.set('Content-Type', 'text/xml');
+  return res.send(`
+    <Response>
+      <Message>
+        ✅ Absen START berhasil dicatat!\n\n📌 Nama: ${data.nama}\n🚗 Mobil: ${data.mobil}\n📍 KM Awal: ${data.km}\n🕒 Waktu: ${data.waktu}\n\nSelamat bekerja! 🙏
+        <Body>Jika perjalanan sudah selesai, tekan tombol di bawah untuk absen FINISH.</Body>
+        <Buttons>
+          <Button>
+            <Body>FINISH</Body>
+          </Button>
+        </Buttons>
+      </Message>
+    </Response>
+  `);
+} else {
+  const reply = `✅ Absen FINISH berhasil dicatat!\n\n📌 Nama: ${data.nama}\n🚗 Mobil: ${data.mobil || '-'}\n📍 KM Akhir: ${data.km}\n🕒 Waktu: ${data.waktu}\n\nTerima kasih, selamat istirahat 🙏`;
+  res.set('Content-Type', 'text/xml');
+  res.send(`<Response><Message>${reply}</Message></Response>`);
+}
 
-    res.set('Content-Type', 'text/xml');
-    res.send(`<Response><Message>${reply}</Message></Response>`);
 
   } catch (err) {
     console.error('Error:', err.message);

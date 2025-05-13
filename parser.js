@@ -1,5 +1,5 @@
 export const parseMessage = (body) => {
-  const lines = body.trim().split('\n');
+  const lines = body.replace(/\u00A0/g, ' ').trim().split('\n'); // replace non-breaking space with normal space
   const jenisLine = lines[0].toLowerCase();
   const isStart = jenisLine.includes('start');
   const isFinish = jenisLine.includes('finish');
