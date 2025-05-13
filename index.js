@@ -146,7 +146,7 @@ app.post('/webhook', async (req, res) => {
       : `✅ Absen FINISH berhasil dicatat!\n\n📌 Nama: ${data.nama}\n📍 KM Akhir: ${data.km}\n🕒 Waktu: ${data.waktu}\n\nTerima kasih, selamat istirahat 🙏`;
 
       
-    if (typeof responseGoogle === 'string' && responseGoogle.includes('Error:')) {
+    if (typeof responseGoogle === 'string' && responseGoogle.includes('ERROR')) {
         console.error('⚠️ Google Apps Script error detected:', responseGoogle);
         reply = '❌ Gagal mencatat absen: ' + responseGoogle;
     }
