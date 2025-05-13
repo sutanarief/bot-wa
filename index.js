@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { sendToGoogleSheet, checkUnfinishedStart } from './googleSheet.js';
 import { parseMessage } from './parser.js';
 import axios from 'axios';
+import { getDriverStatus, setDriverStatus, clearDriverStatus } from './statusStore.js';
 
 dotenv.config();
 const app = express();
@@ -96,7 +97,8 @@ app.post('/webhook', async (req, res) => {
       return res.send(`<Response><Message>❌ Kolom wajib belum diisi: ${missing.join(', ')}</Message></Response>`);
     }
 
-    const unfinished = await checkUnfinishedStart(sender);
+    const unfinished = getDriverStatus(sender); // ganti dengan ini
+
 
     if (parsed.jenis === 'start' && unfinished) {
       return res.send(`<Response><Message>⚠️ Kamu belum melakukan absen FINISH dari START sebelumnya. Selesaikan dulu sebelum memulai lagi.</Message></Response>`);
@@ -126,6 +128,16 @@ app.post('/webhook', async (req, res) => {
     };
 
     await sendToGoogleSheet(data);
+    if (parsed.jenis === 'start') {
+        setDriverStatus(sender, {
+            active: true,
+            nama: parsed.nama,
+            waktu: new Date().toISOString()
+        });
+    } else if (parsed.jenis === 'finish') {
+        clearDriverStatus(sender);
+    }
+
 
     const reply = parsed.jenis === 'start'
       ? `✅ Absen START berhasil dicatat!\n\n📌 Nama: ${data.nama}\n🚗 Mobil: ${data.mobil}\n📍 KM Awal: ${data.km}\n🕒 Waktu: ${data.waktu}\n\nSelamat bekerja! 🙏`
