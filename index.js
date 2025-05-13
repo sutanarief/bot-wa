@@ -79,8 +79,8 @@ app.post('/webhook', async (req, res) => {
         🚗 Mobil: ${data.mobil}
         📍 KM Awal: ${data.km}
         🕒 Waktu: ${data.waktu}
-
-    Selamat bekerja, hati-hati di jalan! 🙏
+        
+        Selamat bekerja, hati-hati di jalan! 🙏
         `
       : `
       ⛔ Absen FINISH berhasil dicatat!
@@ -89,7 +89,7 @@ app.post('/webhook', async (req, res) => {
         🚗 Mobil: ${data.mobil}
         📍 KM Awal: ${data.km}
         🕒 Waktu: ${data.waktu}
-
+        
         Terima kasih atas kerja hari ini. Selamat beristirahat, semoga sehat selalu! 🙏
       `;
 
