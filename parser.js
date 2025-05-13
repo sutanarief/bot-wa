@@ -1,17 +1,29 @@
 export const parseMessage = (body) => {
-  const lower = body.toLowerCase();
-  const isMasuk = lower.includes('start');
-  const isPulang = lower.includes('finish');
-  const payload = lower.split(' ')
-  console.log(payload)
-  const nama = payload[1]
-  const mobil = payload[2]
-  const km = payload[3]
+  const lines = body.trim().split('\n');
+  const jenisLine = lines[0].toLowerCase();
+  const isStart = jenisLine.includes('start');
+  const isFinish = jenisLine.includes('finish');
+
+  const fields = {};
+  lines.slice(1).forEach(line => {
+    const [key, ...rest] = line.split(':');
+    if (key && rest.length > 0) {
+      fields[key.trim().toLowerCase()] = rest.join(':').trim();
+    }
+  });
 
   return {
-    jenis: isMasuk ? 'start' : isPulang ? 'finish' : '',
-    nama,
-    mobil,
-    km
+    jenis: isStart ? 'start' : isFinish ? 'finish' : '',
+    nama: fields['nama'] || '',
+    mobil: fields['mobil'] || '',
+    nopol: fields['nopol'] || '',
+    km: fields['km awal'] || fields['km akhir'] || '',
+    bensin: fields['bensin awal'] || fields['bensin akhir'] || '',
+    saldoEtoll: fields['saldo etoll awal'] || fields['saldo etoll akhir'] || '',
+    uangCash: fields['uang cash awal'] || '',
+    parkirEtoll: fields['parkir etoll'] || '',
+    parkirCash: fields['parkir cash'] || '',
+    isiBensin: fields['isi bensin'] || '',
+    isiTol: fields['isi tol'] || ''
   };
 };
