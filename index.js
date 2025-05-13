@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
-import { sendToGoogleSheet, checkUnfinishedStart } from './googleSheet.js';
+import { sendToGoogleSheet } from './googleSheet.js';
 import { parseMessage } from './parser.js';
 import axios from 'axios';
 import { getDriverStatus, setDriverStatus, clearDriverStatus } from './statusStore.js';
