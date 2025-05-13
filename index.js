@@ -141,7 +141,7 @@ app.post('/webhook', async (req, res) => {
     }
 
 
-    const reply = parsed.jenis === 'start'
+    let reply = parsed.jenis === 'start'
       ? `✅ Absen START berhasil dicatat!\n\n📌 Nama: ${data.nama}\n🚗 Mobil: ${data.mobil}\n📍 KM Awal: ${data.km}\n🕒 Waktu: ${data.waktu}\n\nSelamat bekerja! 🙏`
       : `✅ Absen FINISH berhasil dicatat!\n\n📌 Nama: ${data.nama}\n📍 KM Akhir: ${data.km}\n🕒 Waktu: ${data.waktu}\n\nTerima kasih, selamat istirahat 🙏`;
 
