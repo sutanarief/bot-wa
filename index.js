@@ -147,7 +147,7 @@ app.post('/webhook', async (req, res) => {
 
       
     if (typeof responseGoogle === 'string' && responseGoogle.includes('ERROR')) {
-        console.error('⚠️ Google Apps Script error detected:', responseGoogle);
+        console.log('⚠️ Google Apps Script error detected:', responseGoogle);
         reply = '❌ Gagal mencatat absen: ' + responseGoogle;
     }
 
