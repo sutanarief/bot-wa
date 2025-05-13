@@ -31,14 +31,14 @@ app.post('/webhook', async (req, res) => {
 
     // VALIDASI
     if (!parsed.jenis || !parsed.nama) {
-        return res.send(`<Response><Message>❌ Format salah. Harap sertakan Nama dan ${parsed.jenis === 'masuk' ? 'Mobil' : 'KM'}.</Message></Response>`);
+        return res.send(`<Response><Message>❌ Format salah. Harap sertakan Nama dan ${parsed.jenis === 'start' ? 'Mobil' : 'KM'}.</Message></Response>`);
     }
 
-    if (jenis === 'masuk' && !mobil) {
+    if (jenis === 'start' && !mobil) {
       return res.send(`<Response><Message>❌ Harap sertakan "Mobil".</Message></Response>`);
     }
 
-    if (parsed.jenis === 'Pulang' && !parsed.km) {
+    if (parsed.jenis === 'finish' && !parsed.km) {
       return res.send(`<Response><Message>❌ Harap sertakan "KM".</Message></Response>`);
     }
 
@@ -65,9 +65,26 @@ app.post('/webhook', async (req, res) => {
 
     await sendToGoogleSheet(data);
 
-    const reply = parsed.jenis === 'Masuk'
-      ? `${getGreeting()}, ${parsed.nama}! Absen masuk berhasil ✅`
-      : `Terima kasih ${parsed.nama}, absen pulang sudah dicatat. 🏁`;
+    const reply = parsed.jenis === 'start'
+      ? `✅ Absen START berhasil dicatat!
+
+            📌 Nama: ${nama}  
+            🚗 Mobil: ${mobil}
+            📍 KM Awal: ${km}
+            🕒 Waktu: ${waktu}
+
+            Selamat bekerja, hati-hati di jalan! 🙏
+        `
+      : `
+      ⛔ Absen FINISH berhasil dicatat!
+
+         📌 Nama: ${nama}  
+        🚗 Mobil: ${mobil}
+        📍 KM Awal: ${km}
+        🕒 Waktu: ${waktu}
+
+        Terima kasih atas kerja hari ini. Selamat beristirahat, semoga sehat selalu! 🙏
+      `;
 
     res.set('Content-Type', 'text/xml');
     res.send(`<Response><Message>${reply}</Message></Response>`);
