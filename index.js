@@ -1,9 +1,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
-import axios from 'axios';
-import { sendToGoogleSheet } from './googleSheet.js';
+import { sendToGoogleSheet, checkUnfinishedStart } from './googleSheet.js';
 import { parseMessage } from './parser.js';
+import axios from 'axios';
 
 dotenv.config();
 const app = express();
@@ -67,9 +67,6 @@ Isi Tol:`;
   return null;
 }
 
-
-
-
 app.post('/webhook', async (req, res) => {
   try {
     const body = (req.body.Body || '').trim();
@@ -78,41 +75,37 @@ app.post('/webhook', async (req, res) => {
     const lon = req.body.Longitude || '';
     const lower = body.toLowerCase();
 
-    // 1. Deteksi permintaan form
     if (lower === 'start' || lower === 'finish') {
       const template = getFormTemplate(lower);
       res.set('Content-Type', 'text/xml');
       return res.send(`<Response><Message>${template}</Message></Response>`);
     }
 
-    // 2. Parsing structured message
     const parsed = parseMessage(body);
-    console.log(parsed)
 
     if (!parsed.jenis) {
       return res.send(`<Response><Message>❌ Format tidak dikenali. Ketik "start" atau "finish" untuk mulai absen.</Message></Response>`);
     }
 
-    // 3. Validasi isi form
     const requiredFields = parsed.jenis === 'start'
       ? ['nama', 'mobil', 'nopol', 'km', 'bensin', 'saldoEtoll', 'uangCash']
-      : ['nama', 'km', 'bensin', 'saldoEtoll', 'parkirEtoll', 'parkirCash', 'isiBensin', 'isiTol'];
+      : ['nama', 'km', 'bensin', 'saldoEtoll', 'uangCash', 'parkirEtoll', 'parkirCash', 'isiBensin', 'isiTol'];
 
     const missing = requiredFields.filter(k => !parsed[k]);
     if (missing.length > 0) {
       return res.send(`<Response><Message>❌ Kolom wajib belum diisi: ${missing.join(', ')}</Message></Response>`);
     }
 
-    // 4. Cek ganda (opsional)
-    // const checkURL = `${process.env.GOOGLE_SHEET_URL}?sender=${encodeURIComponent(sender)}&jenis=${parsed.jenis}`;
-    // const checkRes = await axios.get(checkURL);
-    // const { exists } = checkRes.data;
+    const unfinished = await checkUnfinishedStart(sender);
 
-    // if (exists) {
-    //   return res.send(`<Response><Message>⚠️ Kamu sudah absen ${parsed.jenis} hari ini.</Message></Response>`);
-    // }
+    if (parsed.jenis === 'start' && unfinished) {
+      return res.send(`<Response><Message>⚠️ Kamu belum melakukan absen FINISH dari START sebelumnya. Selesaikan dulu sebelum memulai lagi.</Message></Response>`);
+    }
 
-    // 5. Kirim ke Google Sheets
+    if (parsed.jenis === 'finish' && !unfinished) {
+      return res.send(`<Response><Message>⚠️ Tidak ditemukan absen START yang aktif. Silakan lakukan absen START terlebih dahulu.</Message></Response>`);
+    }
+
     const data = {
       waktu: formatTanggalIndonesia(new Date()),
       jenis: parsed.jenis,
@@ -134,34 +127,18 @@ app.post('/webhook', async (req, res) => {
 
     await sendToGoogleSheet(data);
 
-    if (parsed.jenis === 'start') {
-  res.set('Content-Type', 'text/xml');
-  return res.send(`
-    <Response>
-      <Message>
-        ✅ Absen START berhasil dicatat!\n\n📌 Nama: ${data.nama}\n🚗 Mobil: ${data.mobil}\n📍 KM Awal: ${data.km}\n🕒 Waktu: ${data.waktu}\n\nSelamat bekerja! 🙏
-        <Body>Jika perjalanan sudah selesai, tekan tombol di bawah untuk absen FINISH.</Body>
-        <Buttons>
-          <Button>
-            <Body>FINISH</Body>
-          </Button>
-        </Buttons>
-      </Message>
-    </Response>
-  `);
-} else {
-  const reply = `✅ Absen FINISH berhasil dicatat!\n\n📌 Nama: ${data.nama}\n🚗 Mobil: ${data.mobil || '-'}\n📍 KM Akhir: ${data.km}\n🕒 Waktu: ${data.waktu}\n\nTerima kasih, selamat istirahat 🙏`;
-  res.set('Content-Type', 'text/xml');
-  res.send(`<Response><Message>${reply}</Message></Response>`);
-}
+    const reply = parsed.jenis === 'start'
+      ? `✅ Absen START berhasil dicatat!\n\n📌 Nama: ${data.nama}\n🚗 Mobil: ${data.mobil}\n📍 KM Awal: ${data.km}\n🕒 Waktu: ${data.waktu}\n\nSelamat bekerja! 🙏`
+      : `✅ Absen FINISH berhasil dicatat!\n\n📌 Nama: ${data.nama}\n📍 KM Akhir: ${data.km}\n🕒 Waktu: ${data.waktu}\n\nTerima kasih, selamat istirahat 🙏`;
 
+    res.set('Content-Type', 'text/xml');
+    res.send(`<Response><Message>${reply}</Message></Response>`);
 
   } catch (err) {
     console.error('Error:', err.message);
     res.status(500).send('<Response><Message>❌ Gagal mencatat absen.</Message></Response>');
   }
 });
-
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Bot aktif di port ${PORT}`));
