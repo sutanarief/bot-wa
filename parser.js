@@ -12,6 +12,8 @@ export const parseMessage = (body) => {
     }
   });
 
+  console.log(fields)
+
   return {
     jenis: isStart ? 'start' : isFinish ? 'finish' : '',
     nama: fields['nama'] || '',
