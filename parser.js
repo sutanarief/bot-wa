@@ -19,11 +19,11 @@ export const parseMessage = (body) => {
     nopol: fields['nopol'] || '',
     km: fields['km awal'] || fields['km akhir'] || '',
     bensin: fields['bensin awal'] || fields['bensin akhir'] || '',
-    saldoEtoll: fields['saldo etoll awal'] || fields['saldo etoll akhir'] || '',
-    uangCash: fields['uang cash awal'] || '',
-    parkirEtoll: fields['parkir etoll'] || '',
-    parkirCash: fields['parkir cash'] || '',
-    isiBensin: fields['isi bensin'] || '',
-    isiTol: fields['isi tol'] || ''
+    saldoEtoll: fields['saldo etoll awal'] || fields['saldo etoll akhir'] || '0',
+    uangCash: fields['uang cash awal'] || '0',
+    parkirEtoll: fields['parkir etoll'] || '0',
+    parkirCash: fields['parkir cash'] || '0',
+    isiBensin: fields['isi bensin'] || '0',
+    isiTol: fields['isi tol'] || '0'
   };
 };

@@ -88,6 +88,7 @@ app.post('/webhook', async (req, res) => {
 
     // 2. Parsing structured message
     const parsed = parseMessage(body);
+    console.log(parsed)
 
     if (!parsed.jenis) {
       return res.send(`<Response><Message>❌ Format tidak dikenali. Ketik "start" atau "finish" untuk mulai absen.</Message></Response>`);
