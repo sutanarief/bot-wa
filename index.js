@@ -10,16 +10,28 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 
 function formatTanggalIndonesia(date) {
-  const optionsTanggal = { day: 'numeric', month: 'long', year: 'numeric' };
-  const optionsWaktu = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+  const optionsTanggal = {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'Asia/Jakarta'
+  };
+
+  const optionsWaktu = {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+    timeZone: 'Asia/Jakarta'
+  };
 
   const bagianTanggal = date.toLocaleDateString('id-ID', optionsTanggal);
-  const bagianWaktu = date.toLocaleTimeString('id-ID', optionsWaktu).replace(/\./g, ':');
+  const bagianWaktu = date
+    .toLocaleTimeString('id-ID', optionsWaktu)
+    .replace(/\./g, ':');
 
   return `${bagianTanggal}, ${bagianWaktu}`;
 }
-
-console.log(formatTanggalIndonesia(new Date()));
 
 
 
